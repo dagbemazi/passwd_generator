@@ -4,27 +4,45 @@ from random import choices
 from string import ascii_letters, digits, punctuation
 import pyperclip
 
-"""Request for options and make a random generator of length specified by user.
-Create default values for generator values.
 
-User may want memorable pass, exclude puncts, digits
+def password_validator(passwd):
 
-easy to say: lower+upper
-easytorread: same + num/digits
-allchars
-length
-"""
+    strength = 0
+
+    length = len(passwd)
+    # Check length
+    if length > 8:
+        strength += 1
+
+    if any(char.isdigit() for char in passwd):
+        strength += 1
+
+    if any(not char.isalnum() for char in passwd):
+        strength += 1
+
+    if any(char.islower() for char in passwd) or any(char.isupper() for char in passwd):
+        strength += 1
+
+    return strength
 
 
-def password_strength():
-    password = input("Enter your password: ")
-    # if len(password) < 8 or
-    print("Weak")
+def password_strength(passwd):
+    validation = password_validator(passwd)
+
+    indicator = ""
+    if validation < 2:
+        indicator += "Password is very weak"
+    elif validation == 2:
+        indicator += "Password is weak"
+    elif validation == 3:
+        indicator += "Password is strong"
+    elif validation == 4:
+        indicator += "Password is very strong"
+
+    print(indicator)
 
 
 def generate_password(char_set, length):
-    if length in [None, "", " "]:
-        length = 12
     return "".join(choices(char_set, k=length))
 
 
@@ -51,6 +69,7 @@ def password_gen_helper():
     pyperclip.copy(generated_password)
     print(generated_password)
     print("Password copied to clipboard")
+    password_strength(generated_password)
 
 
 def main():
@@ -61,7 +80,8 @@ def main():
         pass
 
     if usage == 1:
-        password_strength()
+        password = input("Enter your password: ")
+        password_strength(password)
     elif usage == 2:
         password_gen_helper()
 
